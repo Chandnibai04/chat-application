@@ -16,9 +16,10 @@ const app = express();
 
 // -------------------- MIDDLEWARE --------------------
 app.use(cors({
-  origin: "https://localhost:5173", // frontend
+  origin: process.env.FRONTEND_URL,  // use env variable
   credentials: true,
 }));
+
 
 app.use(express.json()); // parse JSON bodies
 

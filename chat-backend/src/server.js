@@ -5,21 +5,14 @@ import { Server } from "socket.io";
 import app from "./app.js";
 
 // 🔹 Create HTTPS server
-const server = https.createServer(
-  {
-    key: fs.readFileSync("cert/localhost-key.pem"),
-    cert: fs.readFileSync("cert/localhost.pem"),
-  },
-  app
-);
+const server = https.createServer(app);
 
 // 🔹 Initialize Socket.IO with CORS
-const io = new Server(server, {
-  cors: {
-    origin: "https://localhost:5173", // your frontend
-    methods: ["GET", "POST"],
-  },
-});
+app.use(cors({
+  origin: process.env.FRONTEND_URL,  // use env variable
+  methods: ["GET", "POST"],
+}));
+
 
 // 🔹 Track online users: { userId: socketId }
 const onlineUsers = {};
