@@ -1,0 +1,33 @@
+version: "3"
+
+services:
+  mongo:
+    image: mongo:6
+    container_name: mongo
+    ports:
+      - "27017:27017"   # MongoDB default port
+    volumes:
+      - mongo-data:/data/db
+
+  backend:
+    build: ./chat-backend
+    container_name: backend
+    ports:
+      - "5000:5000"     # HTTPS + WSS server
+    environment:
+      - MONGO_URI=mongodb+srv://chat-application:application@chat-application.ynlbs36.mongodb.net/?appName=chat-application
+    depends_on:
+      - mongo
+    volumes:
+      - ./chat-backend/cert:/app/cert  # Mount cert folder
+
+  frontend:
+    build: ./chat-frontend2
+    container_name: frontend
+    ports:
+      - "5173:5173"
+    depends_on:
+      - backend
+
+volumes:
+  mongo-data:

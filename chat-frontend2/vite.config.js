@@ -10,10 +10,7 @@ export default defineConfig({
     tailwindcss(),
   ],
   server: {
-    https: {
-      key: fs.readFileSync('./cert/localhost-key.pem'),
-      cert: fs.readFileSync('./cert/localhost.pem'),
-    },
+    
     port: 5173,
     fs: {
       strict: false, // ✅ allows React Router to handle unknown paths
