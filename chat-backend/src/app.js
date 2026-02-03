@@ -1,4 +1,3 @@
-// app.js
 import express from "express";
 import cors from "cors";
 import dotenv from "dotenv";
@@ -10,41 +9,29 @@ import chatRoutes from "./routes/chatRoutes.js";
 import messageRoutes from "./routes/message.js";
 
 dotenv.config();
-connectDB();
 
 const app = express();
 
-// -------------------- MIDDLEWARE --------------------
+// 🔹 Connect DB only once
+connectDB();
+
+// 🔹 Middleware
 app.use(cors({
-  origin: process.env.FRONTEND_URL,  // use env variable
+  origin: process.env.FRONTEND_URL,
   credentials: true,
 }));
 
+app.use(express.json());
 
-app.use(express.json()); // parse JSON bodies
+// 🔹 Routes
+app.get("/", (req, res) => {
+  res.send("API is running");
+});
 
-// -------------------- ROUTES --------------------
-app.get("/", (req, res) => res.send("API is running"));
-
-// Auth routes
 app.use("/api/auth", authRoutes);
-
-// User routes
 app.use("/api/users", userRoutes);
-
-// Chat & message routes
 app.use("/api/chat", chatRoutes);
 app.use("/api/messages", messageRoutes);
 
-// -------------------- 404 HANDLER --------------------
-app.use((req, res) => {
-  res.status(404).json({ error: "Endpoint not found" });
-});
-
-// -------------------- ERROR HANDLER --------------------
-app.use((err, req, res, next) => {
-  console.error(err.stack);
-  res.status(500).json({ error: "Internal server error" });
-});
-
+// 🔹 Export app (VERY IMPORTANT)
 export default app;

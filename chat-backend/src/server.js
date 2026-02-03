@@ -1,61 +1,61 @@
-// server.js
-import fs from "fs";
-import https from "https";
-import { Server } from "socket.io";
-import app from "./app.js";
+// // server.js
+// import fs from "fs";
+// import https from "https";
+// import { Server } from "socket.io";
+// import app from "./app.js";
 
-// 🔹 Create HTTPS server
-const server = https.createServer(app);
+// // 🔹 Create HTTPS server
+// const server = https.createServer(app);
 
-// 🔹 Initialize Socket.IO with CORS
-app.use(cors({
-  origin: process.env.FRONTEND_URL,  // use env variable
-  methods: ["GET", "POST"],
-}));
+// // 🔹 Initialize Socket.IO with CORS
+// app.use(cors({
+//   origin: process.env.FRONTEND_URL,  // use env variable
+//   methods: ["GET", "POST"],
+// }));
 
 
-// 🔹 Track online users: { userId: socketId }
-const onlineUsers = {};
+// // 🔹 Track online users: { userId: socketId }
+// const onlineUsers = {};
 
-// 🔹 Handle socket connections
-io.on("connection", (socket) => {
-  console.log("User connected:", socket.id);
+// // 🔹 Handle socket connections
+// io.on("connection", (socket) => {
+//   console.log("User connected:", socket.id);
 
-  // User joins (store their socket id)
-  socket.on("join", (userId) => {
-    onlineUsers[userId] = socket.id;
-    socket.join(userId);
-    console.log(`User ${userId} joined`);
-  });
+//   // User joins (store their socket id)
+//   socket.on("join", (userId) => {
+//     onlineUsers[userId] = socket.id;
+//     socket.join(userId);
+//     console.log(`User ${userId} joined`);
+//   });
 
-  // Handle sending messages
-  socket.on("sendMessage", (msg) => {
-    const receiverSocket = onlineUsers[msg.receiver];
-    if (receiverSocket) {
-      io.to(receiverSocket).emit("receiveMessage", msg);
-    }
-  });
+//   // Handle sending messages
+//   socket.on("sendMessage", (msg) => {
+//     const receiverSocket = onlineUsers[msg.receiver];
+//     if (receiverSocket) {
+//       io.to(receiverSocket).emit("receiveMessage", msg);
+//     }
+//   });
 
-  // 🔹 Handle new signup user
-  socket.on("newUser", (user) => {
-    console.log("New user signed up:", user);
-    socket.broadcast.emit("userJoined", user); // notify all other clients
-  });
+//   // 🔹 Handle new signup user
+//   socket.on("newUser", (user) => {
+//     console.log("New user signed up:", user);
+//     socket.broadcast.emit("userJoined", user); // notify all other clients
+//   });
 
-  // Handle disconnect
-  socket.on("disconnect", () => {
-    for (const userId in onlineUsers) {
-      if (onlineUsers[userId] === socket.id) {
-        delete onlineUsers[userId];
-        break;
-      }
-    }
-    console.log("User disconnected:", socket.id);
-  });
-});
+//   // Handle disconnect
+//   socket.on("disconnect", () => {
+//     for (const userId in onlineUsers) {
+//       if (onlineUsers[userId] === socket.id) {
+//         delete onlineUsers[userId];
+//         break;
+//       }
+//     }
+//     console.log("User disconnected:", socket.id);
+//   });
+// });
 
-// 🔹 Start HTTPS + WSS server
-const PORT = process.env.PORT || 5000;
-server.listen(PORT, () =>
-  console.log(`HTTPS + WSS server running on https://localhost:${PORT}`)
-);
+// // 🔹 Start HTTPS + WSS server
+// const PORT = process.env.PORT || 5000;
+// server.listen(PORT, () =>
+//   console.log(`HTTPS + WSS server running on https://localhost:${PORT}`)
+// );
