@@ -1,6 +1,7 @@
   import { useState } from "react";
   import { Link } from "react-router-dom";
   import axios from "axios";
+  const BASE_URL = process.env.REACT_APP_BACKEND_URL;
 
   function ForgotPassword() {
     const [email, setEmail] = useState("");
@@ -14,7 +15,7 @@
 
       try {
         const res = await axios.post(
-          "https://localhost:5000/api/users/forgot-password",
+          `${BASE_URL}/api/users/forgot-password`,
           { email }
         );
 

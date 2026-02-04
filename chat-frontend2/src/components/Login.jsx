@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import axios from "axios";
-
+const BASE_URL = process.env.REACT_APP_BACKEND_URL;
 function Login({ onLogin }) { // accept onLogin prop
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
@@ -15,7 +15,7 @@ function Login({ onLogin }) { // accept onLogin prop
     try {
       // Call backend login API
       const res = await axios.post(
-        "https://localhost:5000/api/users/login",
+        `${BASE_URL}/api/users/login`,
         { emailOrPhone: username, password }
       );
 

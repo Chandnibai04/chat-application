@@ -2,6 +2,9 @@ import { useState, useEffect, useRef } from "react";
 import axios from "axios";
 import { socket } from "../socket/socket";
 
+// Backend URL from .env
+const BASE_URL = process.env.REACT_APP_BACKEND_URL;
+
 function ChatBox({ currentUser, otherUser }) {
   const [messages, setMessages] = useState([]);
   const [newMessage, setNewMessage] = useState("");
@@ -17,7 +20,7 @@ function ChatBox({ currentUser, otherUser }) {
   // =========================
   useEffect(() => {
     if (!currentUser) return;
-    socket.emit("join", currentUser.id); // join personal room
+    socket.emit("join", currentUser.id);
   }, [currentUser]);
 
   // =========================
@@ -29,8 +32,10 @@ function ChatBox({ currentUser, otherUser }) {
     const fetchMessages = async () => {
       try {
         const res = await axios.get(
-          `https://localhost:5000/api/chat/messages/${otherUser._id}`,
-          { headers: { Authorization: `Bearer ${token}` } }
+          `${BASE_URL}/api/chat/messages/${otherUser._id}`,
+          {
+            headers: { Authorization: `Bearer ${token}` },
+          }
         );
 
         if (res.data && Array.isArray(res.data.messages)) {
@@ -47,26 +52,23 @@ function ChatBox({ currentUser, otherUser }) {
   }, [currentUser, otherUser, token]);
 
   // =========================
-  // SOCKET: RECEIVE NEW MESSAGE
+  // SOCKET: RECEIVE MESSAGE
   // =========================
   useEffect(() => {
     if (!currentUser) return;
 
     const handleReceive = (msg) => {
-      // ---------------------
-      // 1️⃣ Chat update (only if current chat open)
-      // ---------------------
+      // If current chat is open
       if (otherUser && msg.sender === otherUser._id) {
         setMessages((prev) => {
-          if (!prev.find((m) => m._id === msg._id)) return [...prev, msg];
+          if (!prev.find((m) => m._id === msg._id)) {
+            return [...prev, msg];
+          }
           return prev;
         });
       }
 
-      // ---------------------
-      // 2️⃣ WhatsApp-style notification
-      // Only show if message is for currentUser AND chat with sender is not open
-      // ---------------------
+      // Notification logic
       if (
         msg.receiver === currentUser.id &&
         (!otherUser || msg.sender !== otherUser._id)
@@ -86,7 +88,9 @@ function ChatBox({ currentUser, otherUser }) {
     const container = messagesContainerRef.current;
     if (!container) return;
 
-    if (isAtBottomRef.current) container.scrollTop = container.scrollHeight;
+    if (isAtBottomRef.current) {
+      container.scrollTop = container.scrollHeight;
+    }
   }, [messages]);
 
   // =========================
@@ -117,19 +121,23 @@ function ChatBox({ currentUser, otherUser }) {
 
     try {
       const res = await axios.post(
-        "https://localhost:5000/api/messages/send",
+        `${BASE_URL}/api/messages/send`,
         messageData,
-        { headers: { Authorization: `Bearer ${token}` } }
+        {
+          headers: { Authorization: `Bearer ${token}` },
+        }
       );
 
       const savedMessage = res.data.message;
 
-      // Emit via socket to receiver
+      // Emit socket event
       socket.emit("sendMessage", savedMessage);
 
-      // Add locally
+      // Update UI immediately
       setMessages((prev) => {
-        if (!prev.find((m) => m._id === savedMessage._id)) return [...prev, savedMessage];
+        if (!prev.find((m) => m._id === savedMessage._id)) {
+          return [...prev, savedMessage];
+        }
         return prev;
       });
 
@@ -141,7 +149,7 @@ function ChatBox({ currentUser, otherUser }) {
   };
 
   // =========================
-  // CLEAR NOTIFICATIONS WHEN CHAT OPEN
+  // CLEAR NOTIFICATIONS WHEN CHAT OPENS
   // =========================
   useEffect(() => {
     setNotifications(0);
@@ -151,7 +159,9 @@ function ChatBox({ currentUser, otherUser }) {
     <div className="h-full flex flex-col bg-[#020617] rounded-lg p-4">
       {/* HEADER */}
       <div className="flex items-center justify-between mb-3">
-        <h2 className="text-lg font-semibold text-purple-300">{otherUser?.username}</h2>
+        <h2 className="text-lg font-semibold text-purple-300">
+          {otherUser?.username}
+        </h2>
         {notifications > 0 && (
           <div className="bg-red-500 text-white rounded-full px-2 py-1 text-xs">
             {notifications} new
@@ -159,7 +169,7 @@ function ChatBox({ currentUser, otherUser }) {
         )}
       </div>
 
-      {/* MESSAGES AREA */}
+      {/* MESSAGES */}
       <div
         ref={messagesContainerRef}
         onScroll={handleScroll}
@@ -185,7 +195,7 @@ function ChatBox({ currentUser, otherUser }) {
         ))}
       </div>
 
-      {/* INPUT AREA */}
+      {/* INPUT */}
       <form onSubmit={handleSend} className="flex gap-2 mt-3">
         <input
           type="text"

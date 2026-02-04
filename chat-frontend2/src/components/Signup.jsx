@@ -2,7 +2,7 @@ import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import axios from "axios";
 import { socket } from "../socket/socket"; // 🔹 added this
-
+const BASE_URL = process.env.REACT_APP_BACKEND_URL;
 
 function Signup() {
   const [username, setName] = useState("");
@@ -20,7 +20,7 @@ function Signup() {
 
   try {
     const res = await axios.post(
-      "https://localhost:5000/api/users/signup",
+      `${BASE_URL}/api/users/signup`,
       { username, email, phone, password, confirmPassword }
     );
 

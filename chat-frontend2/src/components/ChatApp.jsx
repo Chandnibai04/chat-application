@@ -5,6 +5,9 @@ import ChatBox from "./ChatBox";
 import ChatList from "./ChatList";
 import { socket } from "../socket/socket";
 
+// Use backend URL from .env
+const BASE_URL = process.env.REACT_APP_BACKEND_URL;
+
 function ChatApp() {
   const navigate = useNavigate();
   const token = sessionStorage.getItem("token");
@@ -73,7 +76,7 @@ function ChatApp() {
 
     const fetchUsers = async () => {
       try {
-        const res = await axios.get("https://localhost:5000/api/users", {
+        const res = await axios.get(`${BASE_URL}/api/users`, {
           headers: { Authorization: `Bearer ${token}` },
         });
         const others = res.data
