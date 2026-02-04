@@ -3,7 +3,7 @@ import axios from "axios";
 import { socket } from "../socket/socket";
 
 // Backend URL from .env
-const BASE_URL = process.env.REACT_APP_BACKEND_URL;
+const BASE_URL = import.meta.env.VITE_BACKEND_URL;
 
 function ChatBox({ currentUser, otherUser }) {
   const [messages, setMessages] = useState([]);

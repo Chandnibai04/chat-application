@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import axios from "axios";
-const BASE_URL = process.env.REACT_APP_BACKEND_URL;
+const BASE_URL = import.meta.env.VITE_BACKEND_URL;
 function Login({ onLogin }) { // accept onLogin prop
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
@@ -43,8 +43,8 @@ function Login({ onLogin }) { // accept onLogin prop
   };
 
   return (
-    <div className="h-screen w-screen flex items-center justify-center bg-gradient-to-br from-[#0a0f2c] via-[#1a103d] to-[#2a0a4a]">
-      <div className="bg-[#0f0c29] p-12 rounded-lg shadow-lg w-144 max-w-3xl mx-4">
+    <div className="h-screen w-screen flex items-center justify-center bg--to-br from-[#0a0f2c] via-[#1a103d] to-[#2a0a4a]">
+      <div className="bg-[#0f0c29] p-12 rounded-lg shadow-lg w-xl max-w-3xl mx-4">
         <h2 className="text-4xl font-bold text-center text-purple-300 mb-10">
           Secure Login
         </h2>
@@ -85,7 +85,7 @@ function Login({ onLogin }) { // accept onLogin prop
           <button
             type="submit"
             disabled={loading}
-            className="w-full mt-6 bg-gradient-to-r from-purple-600 to-indigo-600 text-white py-4 rounded-lg text-xl font-semibold hover:shadow-[0_0_20px_rgba(139,92,246,0.6)] hover:scale-[1.02] transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+            className="w-full mt-6 bg-linear-to-r from-purple-600 to-indigo-600 text-white py-4 rounded-lg text-xl font-semibold hover:shadow-[0_0_20px_rgba(139,92,246,0.6)] hover:scale-[1.02] transition-all disabled:opacity-50 disabled:cursor-not-allowed"
           >
             {loading ? "Logging in..." : "Login"}
           </button>

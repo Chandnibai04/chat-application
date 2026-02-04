@@ -6,7 +6,7 @@ import ChatList from "./ChatList";
 import { socket } from "../socket/socket";
 
 // Use backend URL from .env
-const BASE_URL = process.env.REACT_APP_BACKEND_URL;
+const BASE_URL = import.meta.env.VITE_BACKEND_URL;
 
 function ChatApp() {
   const navigate = useNavigate();
