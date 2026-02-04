@@ -1,61 +1,30 @@
-// // server.js
-// import fs from "fs";
-// import https from "https";
-// import { Server } from "socket.io";
-// import app from "./app.js";
+// server.js
+import http from "http";
+import mongoose from "mongoose";
+import dotenv from "dotenv";
+import app from "./app.js";
+import { initSockets } from "./sockets/chatSocket.js";
 
-// // 🔹 Create HTTPS server
-// const server = https.createServer(app);
+dotenv.config(); // Load .env variables
 
-// // 🔹 Initialize Socket.IO with CORS
-// app.use(cors({
-//   origin: process.env.FRONTEND_URL,  // use env variable
-//   methods: ["GET", "POST"],
-// }));
+const PORT = process.env.PORT || 5000;
+const MONGO_URI = process.env.MONGO_URI;
 
+// --- Connect to MongoDB ---
+mongoose.connect(MONGO_URI) // standard string works reliably
+  .then(() => console.log("✅ MongoDB connected successfully"))
+  .catch((err) => {
+    console.error("❌ MongoDB connection error:", err);
+    process.exit(1); // Stop server if DB connection fails
+  });
 
-// // 🔹 Track online users: { userId: socketId }
-// const onlineUsers = {};
+// --- Create HTTP server ---
+const server = http.createServer(app);
 
-// // 🔹 Handle socket connections
-// io.on("connection", (socket) => {
-//   console.log("User connected:", socket.id);
+// --- Initialize Socket.IO ---
+initSockets(server);
 
-//   // User joins (store their socket id)
-//   socket.on("join", (userId) => {
-//     onlineUsers[userId] = socket.id;
-//     socket.join(userId);
-//     console.log(`User ${userId} joined`);
-//   });
-
-//   // Handle sending messages
-//   socket.on("sendMessage", (msg) => {
-//     const receiverSocket = onlineUsers[msg.receiver];
-//     if (receiverSocket) {
-//       io.to(receiverSocket).emit("receiveMessage", msg);
-//     }
-//   });
-
-//   // 🔹 Handle new signup user
-//   socket.on("newUser", (user) => {
-//     console.log("New user signed up:", user);
-//     socket.broadcast.emit("userJoined", user); // notify all other clients
-//   });
-
-//   // Handle disconnect
-//   socket.on("disconnect", () => {
-//     for (const userId in onlineUsers) {
-//       if (onlineUsers[userId] === socket.id) {
-//         delete onlineUsers[userId];
-//         break;
-//       }
-//     }
-//     console.log("User disconnected:", socket.id);
-//   });
-// });
-
-// // 🔹 Start HTTPS + WSS server
-// const PORT = process.env.PORT || 5000;
-// server.listen(PORT, () =>
-//   console.log(`HTTPS + WSS server running on https://localhost:${PORT}`)
-// );
+// --- Start server ---
+server.listen(PORT, () => {
+  console.log(`🚀 Server running on port ${PORT}`);
+});

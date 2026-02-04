@@ -93,8 +93,8 @@ export const forgotPassword = async (req, res) => {
       resetPasswordExpire: Date.now() + 15 * 60 * 1000,
     });
 
-    const resetUrl = `https://localhost:5173/reset-password/${resetToken}`;
-    await sendResetEmail(user.email, resetUrl);
+    const resetUrl = `${process.env.FRONTEND_URL}/reset-password/${resetToken}`;
+    await sendResetEmail(user.email, resetUrl); 
 
     // ✅ Return the plain reset token for testing
     res.json({
