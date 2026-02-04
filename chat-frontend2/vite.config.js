@@ -12,9 +12,6 @@ export default defineConfig({
   server: {
     
     port: 5173,
-    fs: {
-      strict: false, // ✅ allows React Router to handle unknown paths
-    },
     historyApiFallback: true, // ✅ serve index.html for any route
   }
 });
